@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico de vendas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header style="background: #1f1f1f; padding: 15px 0; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.5);">
+        <nav>
+            <a href="{{ url_for('index') }}" style="margin: 0 15px;">🏠 Início</a>
+            <a href="{{ url_for('ver_historico') }}" style="margin: 0 15px;">📊 Histórico</a>
+            <a href="{{ url_for('admin') }}" style="margin: 0 15px;">⚙️ Admin</a>
+        </nav>
+    </header>
+
+    <h1>📊 Histórico de Vendas</h1>
+
+    {% if historico %}
+        <div style="max-width: 800px; margin: 30px auto;">
+            <div style="background: #1f1f1f; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                <h2>💰 Total Vendido: R$ {{ "%.2f"|format(total_vendido) }}</h2>
+                <p>Total de vendas: {{ historico|length }}</p>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            {% for venda in historico %}
+                <div style="background: #1f1f1f; padding: 20px; border-radius: 10px; text-align: left;">
+                    <h3>🎬 {{ venda['filme'] }}</h3>
+                    <p>📅 Data: {{ venda['data'] }}</p>
+                    <p>🎫 Tipo: {{ venda['tipo'] }}</p>
+                    <p>📦 Quantidade: {{ venda['quantidade'] }}</p>
+                    <p>💵 Total: R$ {{ "%.2f"|format(venda['total']) }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+    <p style="margin-top: 50px; font-size: 1.2em;">Nenhuma venda registrada ainda.</p>
+{% endif %}
+
+<a href="{{ url_for('index') }}">⬅ Voltar ao início</a>
+
+<footer style="margin-top: 50px; padding: 20px; background: #1f1f1f; border-top: 2px solid #333;">
+    <p style="color: #888;">🎬 Sistema de Cinema Flask</p>
+    <p style="font-size: 0.9em; color: #666;">Desenvolvido por Cauã Costa | v1.0.2</p>
+</footer>
+    
+</body>
+</html>

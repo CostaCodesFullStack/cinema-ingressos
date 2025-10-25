@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Compra - {{ filme }}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <header
+      style="
+        background: #1f1f1f;
+        padding: 15px 0;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      "
+    >
+      <nav>
+        <a href="{{ url_for('index') }}" style="margin: 0 15px">🏠 Início</a>
+        <a href="{{ url_for('ver_historico') }}" style="margin: 0 15px"
+          >📊 Histórico</a
+        >
+        <a href="{{ url_for('admin') }}" style="margin: 0 15px">⚙️ Admin</a>
+      </nav>
+    </header>
+
+    <div style="text-align: center; margin: 20px 0">
+      <img
+        src="{{ filmes[filme]['imagem'] }}"
+        alt="{{ filme }}"
+        style="
+          width: 200px;
+          border-radius: 10px;
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        "
+      />
+    </div>
+
+    <div
+      style="
+        background: #1f1f1f;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px auto;
+        max-width: 400px;
+      "
+    >
+      <h3>💰 Tabela de Preços</h3>
+      <p>
+        <strong>Inteira:</strong> R$ {{ "%.2f"|format(filmes[filme]['preco']) }}
+      </p>
+      <p>
+        <strong>Meia:</strong> R$ {{ "%.2f"|format(filmes[filme]['preco'] / 2)
+        }}
+      </p>
+      <p style="font-size: 0.9em; color: #aaa; margin-top: 10px">
+        *Meia-entrada: menores de 18 anos ou estudantes
+      </p>
+    </div>
+
+    <h1>🎟️ Comprar ingresso para {{ filme }}</h1>
+
+    {% if erro %}
+    <p class="erro">{{ erro }}</p>
+    {% endif %}
+
+    <p>Ingressos disponíveis: {{ estoque }}</p>
+
+    <form method="POST" action="">
+      <label for="idade">Idade:</label><br />
+      <input
+        type="number"
+        id="idade"
+        name="idade"
+        min="0"
+        required
+      /><br /><br />
+
+      <label for="estudante">Carteira de estudante?</label><br />
+      <select id="estudante" name="estudante" required>
+        <option value="">-- selecione --</option>
+        <option value="sim">Sim</option>
+        <option value="nao">Não</option></select
+      ><br /><br />
+
+      <label for="quantidade">Quantidade:</label><br />
+      <input
+        type="number"
+        id="quantidade"
+        name="quantidade"
+        min="1"
+        required
+      /><br /><br />
+
+      <button type="submit">Finalizar Compra</button>
+    </form>
+
+    <a href="{{ url_for('index') }}">⬅ Voltar</a>
+
+    <footer
+      style="
+        margin-top: 50px;
+        padding: 20px;
+        background: #1f1f1f;
+        border-top: 2px solid #333;
+      "
+    >
+      <p style="color: #888">🎬 Sistema de Cinema Flask</p>
+      <p style="font-size: 0.9em; color: #666">
+        Desenvolvido por Cauã Costa | v1.0.2
+      </p>
+    </footer>
+  </body>
+</html>

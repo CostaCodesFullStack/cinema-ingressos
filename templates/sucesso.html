@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compra Realizada!</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+        <div class="sucesso">
+            <h1>✅ Compra realizada com sucesso!</h1>
+            <div style="margin: 30px 0; padding: 20px; background: #0f0f0f; border-radius: 8px;">
+                <p style="font-size: 1.2em;"><strong>🎬 {{ filme }}</strong></p>
+                <p>🎫 <strong>Tipo:</strong> {{ tipo }}</p>
+                <p style="font-size: 1.3em; color: #ff4d4d;"><strong>💰 Total: R$ {{ total }}</strong></p>
+            </div>
+            <p style="color: #aaa; font-size: 0.9em;">
+                Apresente este comprovante na bilheteria
+            </p>
+            <a href="{{ url_for('index') }}">⬅ Voltar ao início</a>
+        </div>
+
+    <footer style="margin-top: 50px; padding: 20px; background: #1f1f1f; border-top: 2px solid #333;">
+        <p style="color: #888;">🎬 Sistema de Cinema Flask</p>
+        <p style="font-size: 0.9em; color: #666;">Desenvolvido por Cauã Costa | v1.0.2</p>
+    </footer>
+    
+</body>
+</html>

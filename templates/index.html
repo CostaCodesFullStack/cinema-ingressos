@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cinema Flask</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <header
+      style="
+        background: #1f1f1f;
+        padding: 15px 0;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      "
+    >
+      <nav>
+        <a href="{{ url_for('index') }}" style="margin: 0 15px">🏠 Início</a>
+        <a href="{{ url_for('ver_historico') }}" style="margin: 0 15px"
+          >📊 Histórico</a
+        >
+        <a href="{{ url_for('admin') }}" style="margin: 0 15px">⚙️ Admin</a>
+      </nav>
+    </header>
+
+    <form
+      action="{{ url_for('buscar') }}"
+      method="get"
+      style="max-width: 500px; margin: 20px auto"
+    >
+      <input
+        type="text"
+        name="q"
+        placeholder="🔍 Buscar filme..."
+        style="
+          width: 100%;
+          padding: 15px;
+          border-radius: 25px;
+          border: 2px solid #333;
+          background: #1f1f1f;
+          color: white;
+        "
+      />
+    </form>
+
+    <h1>🎥 Filmes em Cartaz</h1>
+
+    {% if filmes %}
+    <div class="lista">
+      {% for nome, dados in filmes.items() %}
+      <div class="filme">
+        <img
+          src="{{ dados['imagem'] }}"
+          alt="{{ nome }}"
+          onerror="this.src='https://via.placeholder.com/250x350/1f1f1f/ffffff?text=Sem+Imagem'"
+        />
+        {% if dados['estoque'] < 20 %}
+
+        <div
+          style="
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4d4d;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+          "
+        >
+          ESGOTANDO!
+        </div>
+        {% endif %}
+
+        <h2>
+          {{ nome }}
+          {% if dados.get('ano', 0) >= 2024 %}
+            <span style="background: #4dff4d; color: black; padding: 3px 8px; border-radius: 3px; font-size: 0.7em; margin-left: 8px;">
+              
+              NOVO
+
+            </span>
+          {% endif %}
+        </h2>
+
+        <p style="color: #aaa; font-size: 0.85em; margin: 5px 20px">
+          {{ dados.get('genero', 'N/A', ) }}  |  {{ dados.get('ano', 'N/A') }}
+        </p>
+        
+        <p>Preço: R$ {{ "%.2f"|format(dados['preco']) }}</p>
+        <p>Ingressos disponiveis: {{ dados['estoque'] }}</p>
+
+        <!-- 🔥 Contador de vendas -->
+        <p>🔥 {{ vendas_por_filme.get(nome, 0) }} vendidos</p>
+
+      <a href="{{ url_for('comprar', filmes=nome)}}">🎟️ Comprar</a>
+
+    <p style="margin-top: 50px; font-size: 1.2em; color: #aaa">
+      😔 Nenhum filme encontrado com esse termo.
+    </p>
+
+    <a href="{{ url_for('index') }}">⬅ Ver todos os filmes</a>
+    {% endif %}
+
+    <footer
+      style="
+        margin-top: 50px;
+        padding: 20px;
+        background: #1f1f1f;
+        border-top: 2px solid #333;
+      "
+    >
+      <p style="color: #888">🎬 Sistema de Cinema Flask</p>
+      <p style="font-size: 0.9em; color: #666">
+        Desenvolvido por Cauã Costa | v1.0.2
+      </p>
+    </footer>
+  </body>
+</html>

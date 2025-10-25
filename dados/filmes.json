@@ -1,0 +1,30 @@
+{
+  "Titanic": {
+    "estoque": 98,
+    "preco": 20.0,
+    "imagem": "https://image.tmdb.org/t/p/w500/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg",
+    "ano": 1997,
+    "genero": "Romance/Drama"
+  },
+  "O Poderoso Chefão": {
+    "estoque": 80,
+    "preco": 20.0,
+    "imagem": "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
+    "ano": 1972,
+    "genero": "Crime/Drama"
+  },
+  "A Origem": {
+    "estoque": 50,
+    "preco": 20.0,
+    "imagem": "https://image.tmdb.org/t/p/w500/edv5CZvWj09upOsy2Y6IwDhK8bt.jpg",
+    "ano": 2010,
+    "genero": "Ação/Ficção"
+  },
+  "Na sua pele": {
+    "estoque": 60,
+    "preco": 20.0,
+    "imagem": "https://image.tmdb.org/t/p/w500/mwUUv7cEHvwz6re2rDbvLGN0qCo.jpg",
+    "ano": 2020,
+    "genero": "Terror/Suspense"
+  }
+}
