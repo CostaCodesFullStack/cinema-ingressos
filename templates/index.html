@@ -52,27 +52,37 @@
     {% if filmes %}
     <div class="lista">
       {% for nome, dados in filmes.items() %}
-  <div class="filme-card">
-    <h2>
-      {{ nome }}
-      {% if dados.get('ano', 0) >= 2024 %}
-        <span style="background: #4dff4d; color: black; padding: 3px 8px; border-radius: 3px; font-size: 0.7em;">NOVO</span>
-      {% endif %}
-    </h2>
-    <p style="color: #aaa; font-size: 0.85em; margin: 5px 20px">
-      {{ dados.get('genero', 'N/A') }} | {{ dados.get('ano', 'N/A') }}
-    </p>
-    <p>Preço: R$ {{ "%.2f"|format(dados['preco']) }}</p>
-    <p>Ingressos disponíveis: {{ dados['estoque'] }}</p>
-    <p>🔥 {{ vendas_por_filme.get(nome, 0) }} vendidos</p>
-    <a href="{{ url_for('comprar', filme=nome)}}">🎟️ Comprar</a>
-  </div>
-{% endfor %}
+      <div class="filme">
+        <img 
+          src="{{ dados['imagem'] }}" 
+          alt="{{ nome }}"
+        />
+        
+        <h2>
+          {{ nome }}
+          {% if dados.get('ano', 0) >= 2024 %}
+          <span style="background: #4dff4d; color: black; padding: 3px 8px; border-radius: 3px; font-size: 0.7em;">NOVO</span>
+          {% endif %}
+        </h2>
 
+        <p style="color: #aaa; font-size: 0.85em; margin: 5px 20px">
+          {{ dados.get('genero', 'N/A') }} | {{ dados.get('ano', 'N/A') }}
+        </p>
+
+        <p>Preço: R$ {{ "%.2f"|format(dados['preco']) }}</p>
+
+        <p>Ingressos disponíveis: {{ dados['estoque'] }}</p>
+
+        <p>🔥 {{ vendas_por_filme.get(nome, 0) }} vendidos</p>
+
+        <a href="{{ url_for('comprar', filme=nome) }}">🎟️ Comprar</a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
     <p style="margin-top: 50px; font-size: 1.2em; color: #aaa">
       😔 Nenhum filme encontrado com esse termo.
     </p>
-
     <a href="{{ url_for('index') }}">⬅ Ver todos os filmes</a>
     {% endif %}
 

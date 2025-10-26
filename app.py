@@ -89,8 +89,13 @@ historico = carregar_historico()
 
 @app.route("/")
 def index():
-    vendas_por_filme = contar_vendas_por_filme(historico)
-    return render_template("index.html", filmes=filmes, vendas_por_filme=vendas_por_filme)
+    termo = request.args.get('busca', '').lower()
+    if termo:
+        filtrados = {nome: dados for nome, dados in filmes.items() if termo in nome.lower()}
+    else:
+        filtrados = filmes
+    vendas_por_filmes = contar_vendas_por_filmes(historico)
+    return render_template("index.html", filmes=filtrados, vendas_por_filme=vendas_por_filme)
 
 
 @app.route("/comprar/<filme>", methods=["GET", "POST"])
@@ -216,12 +221,6 @@ def admin():
     total_vendas = len(historico)
     total_arrecadado = sum(item["total"] for item in historico)
     vendas_por_filme = contar_vendas_por_filme(historico)
-
-    # Filmes mais vendidos
-    vendas_por_filme = {}
-    for venda in historico:
-        filme = venda["filme"]
-        vendas_por_filme[filme] = vendas_por_filme.get(filme, 0) + venda["quantidade"]
 
     return render_template(
         "admin.html",

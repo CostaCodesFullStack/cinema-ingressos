@@ -3,6 +3,7 @@
     "filme": "Titanic",
     "tipo": "Inteira",
     "quantidade": 2,
-    "total": 40.0
+    "total": 40.0,
+    "data": "25/10/2025 14:30"
   }
 ]
