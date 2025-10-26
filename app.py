@@ -94,7 +94,7 @@ def index():
         filtrados = {nome: dados for nome, dados in filmes.items() if termo in nome.lower()}
     else:
         filtrados = filmes
-    vendas_por_filmes = contar_vendas_por_filmes(historico)
+    vendas_por_filmes = contar_vendas_por_filme(historico)
     return render_template("index.html", filmes=filtrados, vendas_por_filme=vendas_por_filme)
 
 
