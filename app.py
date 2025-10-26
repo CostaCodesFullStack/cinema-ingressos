@@ -237,7 +237,9 @@ def buscar():
     filmes_filtrados = {
         nome: dados for nome, dados in filmes.items() if termo in nome.lower()
     }
+
     vendas_por_filme = contar_vendas_por_filme(historico)
+
     return render_template("index.html", filmes=filmes_filtrados, vendas_por_filme=vendas_por_filme)
 
 
