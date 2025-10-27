@@ -1,0 +1,22 @@
+# Arquivos Python
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Ambiente virtual
+venv/
+env/
+ENV/
+
+# Variáveis de ambiente (NUNCA COMMITAR!)
+.env
+.env.local
+.env.*.local
+
+# Dados
+dados/
+
+# IDEs
+.vscode/
+.idea/
+*.swp

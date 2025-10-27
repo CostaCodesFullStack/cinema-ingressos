@@ -5,6 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Admin</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .alert {
+            padding: 15px;
+            margin: 20px auto;
+            max-width: 900px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .alert-success {
+            background: #1f4d1f;
+            border: 2px solid #4dff4d;
+            color: #4dff4d;
+        }
+        .alert-error {
+            background: #4d1f1f;
+            border: 2px solid #ff4d4d;
+            color: #ff4d4d;
+        }
+        .alert-warning {
+            background: #4d4d1f;
+            border: 2px solid #ffaa00;
+            color: #ffaa00;
+        }
+        .btn-api {
+            background: #4dff4d;
+            color: #000;
+            font-weight: bold;
+            margin: 10px;
+        }
+        .btn-api:hover {
+            background: #3dd33d;
+        }
+        .form-adicionar {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .form-adicionar input {
+            flex: 1;
+            max-width: 400px;
+        }
+    </style>
 </head>
 <body>
     <header style="background: #1f1f1f; padding: 15px 0; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.5);">
@@ -15,7 +59,71 @@
         </nav>
     </header>
 
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <h1>⚙️ Painel Administrativo</h1>
+
+    {% if tmdb_disponivel %}
+    <!-- Seção API TMDB -->
+    <div style="max-width: 900px; margin: 30px auto;">
+        <div style="background: #1f1f1f; padding: 30px; border-radius: 10px; margin-bottom: 30px; border: 2px solid #4dff4d;">
+            <h2>🎬 API TMDB - Gerenciamento de Catálogo</h2>
+            <p style="color: #aaa; margin: 15px 0;">Atualize automaticamente o catálogo com filmes em cartaz e populares</p>
+            
+            <!-- Botão de atualizar catálogo -->
+            <form method="POST" action="{{ url_for('atualizar_catalogo') }}" style="display: inline;" onsubmit="return confirm('Deseja atualizar o catálogo? O estoque atual será mantido.');">
+                <button type="submit" class="btn-api">
+                    🔄 Atualizar Catálogo Completo
+                </button>
+            </form>
+
+            <p style="color: #666; font-size: 0.9em; margin-top: 20px;">
+                ℹ️ A atualização busca os filmes mais recentes em cartaz e populares, mantendo o estoque atual dos filmes existentes.
+            </p>
+
+            <!-- Formulário para adicionar filme específico -->
+            <hr style="border: 1px solid #333; margin: 30px 0;">
+            
+            <h3>➕ Adicionar Filme Específico</h3>
+            <p style="color: #aaa; font-size: 0.9em;">Digite o nome do filme que deseja adicionar ao catálogo</p>
+            
+            <form method="POST" action="{{ url_for('adicionar_filme') }}" class="form-adicionar">
+                <input 
+                    type="text" 
+                    name="titulo" 
+                    placeholder="Ex: Oppenheimer, Barbie, Duna..." 
+                    required
+                    style="background: #0f0f0f; border: 2px solid #333; padding: 12px; border-radius: 8px;"
+                >
+                <button type="submit" class="btn-api" style="margin: 0;">
+                    🔍 Buscar e Adicionar
+                </button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <!-- Aviso API não configurada -->
+    <div style="max-width: 900px; margin: 30px auto;">
+        <div style="background: #4d4d1f; padding: 20px; border-radius: 10px; border: 2px solid #ffaa00;">
+            <h3>⚠️ API TMDB não configurada</h3>
+            <p style="color: #ffaa00;">Para usar a atualização automática de filmes, configure a API do TMDB.</p>
+            <p style="font-size: 0.9em; color: #ccc; margin-top: 10px;">
+                Crie um arquivo <code>.env</code> na raiz do projeto e adicione:<br>
+                <code style="background: #0f0f0f; padding: 5px 10px; border-radius: 5px; display: inline-block; margin-top: 10px;">
+                    TMDB_API_KEY=c06e7ccd90466973a29b5de97bb41c83
+                </code>
+            </p>
+        </div>
+    </div>
+    {% endif %}
 
     <div style="max-width: 900px; margin: 30px auto;">
         
@@ -31,6 +139,10 @@
                     <p style="font-size: 2em; color: #4dff4d; margin: 0;">R$ {{ "%.2f"|format(total_arrecadado) }}</p>
                     <p style="color: #aaa; margin-top: 5px;">Total Arrecadado</p>
                 </div>
+                <div style="background: #0f0f0f; padding: 20px; border-radius: 8px;">
+                    <p style="font-size: 2em; color: #4d9fff; margin: 0;">{{ filmes|length }}</p>
+                    <p style="color: #aaa; margin-top: 5px;">Filmes no Catálogo</p>
+                </div>
             </div>
         </div>
 
@@ -42,7 +154,14 @@
                 <div style="background: #0f0f0f; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
                     <div style="text-align: left;">
                         <strong>{{ nome }}</strong>
-                        <p style="color: #aaa; font-size: 0.9em; margin: 5px 0 0 0;">R$ {{ "%.2f"|format(dados['preco']) }}</p>
+                        {% if dados.get('ano', 0) >= 2024 %}
+                        <span style="background: #4dff4d; color: black; padding: 2px 6px; border-radius: 3px; font-size: 0.7em; margin-left: 8px;">NOVO</span>
+                        {% endif %}
+                        <p style="color: #aaa; font-size: 0.9em; margin: 5px 0 0 0;">
+                            R$ {{ "%.2f"|format(dados['preco']) }} | 
+                            {{ dados.get('genero', 'N/A') }} | 
+                            {{ dados.get('ano', 'N/A') }}
+                        </p>
                     </div>
                     <div style="text-align: right;">
                         <p style="font-size: 1.5em; margin: 0; 
@@ -81,7 +200,10 @@
 
     <footer style="margin-top: 50px; padding: 20px; background: #1f1f1f; border-top: 2px solid #333;">
         <p style="color: #888;">🎬 Sistema de Cinema Flask</p>
-        <p style="font-size: 0.9em; color: #666;">Desenvolvido por Cauã Costa | v1.0.2</p>
+        <p style="font-size: 0.9em; color: #666;">Desenvolvido por Cauã Costa | v2.0.0</p>
+        {% if tmdb_disponivel %}
+        <p style="font-size: 0.8em; color: #4dff4d; margin-top: 10px;">✅ Integrado com TMDB API</p>
+        {% endif %}
     </footer>
     
 </body>
