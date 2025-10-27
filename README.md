@@ -99,15 +99,39 @@ Este sistema resolve a necessidade de:
 - Data e hora de cada venda
 - Detalhamento de tipo de ingresso
 
+### 🎬 Integração TMDB (NOVO v2.0)
+
+#### 🔄 Atualização Automática
+- Busca filmes em cartaz no Brasil
+- Busca filmes populares do momento
+- Atualização com 8 filmes por vez (configurável)
+- Mantém estoque de filmes existentes
+- Atualização com um clique no painel admin
+
+#### 🔍 Busca Inteligente
+- Adicione qualquer filme da base TMDB
+- Busca por título em português ou inglês
+- Dados completos: sinopse, nota, gêneros
+- Imagens oficiais em alta qualidade
+
+#### 📊 Dados Enriquecidos
+- **Sinopse completa** do filme
+- **Nota de avaliação** (0-10) da comunidade TMDB
+- **ID único** para futuras integrações
+- **Gêneros atualizados** automaticamente
+- **Ano de lançamento** preciso
+
 ---
 
 ## 🛠️ Tecnologias
 
 ### Backend
 ```
-Python 3.8+      - Linguagem de programação
-Flask 3.0+       - Framework web
-Gunicorn 23.0    - Servidor WSGI para produção
+Python 3.8+          - Linguagem de programação
+Flask 3.0+           - Framework web
+Gunicorn 23.0        - Servidor WSGI para produção
+Requests 2.31.0      - Cliente HTTP para APIs       ⭐ NOVO
+Python-dotenv 1.0.0  - Variáveis de ambiente       ⭐ NOVO
 ```
 
 ### Frontend
@@ -117,11 +141,17 @@ CSS3            - Estilização moderna
 Jinja2          - Template engine
 ```
 
+### APIs & Integrações
+```
+TMDB API        - The Movie Database (catálogo de filmes)  ⭐ NOVO
+JSON            - Persistência de dados
+```
+
 ### Ferramentas
 ```
-JSON            - Persistência de dados
 Git             - Controle de versão
 Render          - Plataforma de deploy
+dotenv          - Gerenciamento de configurações            ⭐ NOVO
 ```
 
 ### Padrões e Práticas
@@ -178,6 +208,7 @@ Certifique-se de ter instalado:
 - Python 3.8 ou superior
 - pip (gerenciador de pacotes Python)
 - Git
+- **Conta no TMDB (gratuita)** ⭐ NOVO
 
 ### Passo a Passo
 
@@ -203,12 +234,50 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-4️⃣ **Crie a estrutura de pastas**
+4️⃣ **⭐ NOVO: Configure a API do TMDB**
+
+**a) Obtenha sua API Key:**
+1. Acesse: https://www.themoviedb.org/signup
+2. Crie uma conta gratuita
+3. Vá em: **Configurações → API**
+4. Clique em **"Criar"** ou **"Solicitar uma chave de API"**
+5. Selecione **"Developer"**
+6. Aceite os termos
+7. Copie sua **API Key (v3 auth)**
+
+**b) Crie o arquivo `.env`:**
 ```bash
-mkdir -p dados static templates
+# Crie o arquivo .env na raiz do projeto
+touch .env  # Linux/Mac
+type nul > .env  # Windows
 ```
 
-5️⃣ **Execute a aplicação**
+**c) Adicione a configuração:**
+```env
+TMDB_API_KEY=sua_chave_aqui
+SECRET_KEY=dev-secret-key-mude-isso-em-producao
+DEBUG=True
+FLASK_ENV=development
+```
+
+5️⃣ **Teste a configuração** ⭐ NOVO
+```bash
+python teste_config.py
+```
+
+Você deve ver:
+```
+🔍 Testando configurações...
+✅ API Key: c06e7ccd90...41c83
+✅ Base URL: https://api.themoviedb.org/3
+✅ Debug: True
+✅ Estoque padrão: 100
+✅ Preço padrão: R$ 20.0
+
+🎉 Configuração carregada com sucesso!
+```
+
+6️⃣ **Execute a aplicação**
 ```bash
 # Modo desenvolvimento
 python app.py
@@ -217,7 +286,7 @@ python app.py
 gunicorn app:app
 ```
 
-6️⃣ **Acesse no navegador**
+7️⃣ **Acesse no navegador**
 ```
 http://localhost:5000
 ```
@@ -259,27 +328,70 @@ http://localhost:5000
 ---
 
 ## 📁 Estrutura do Projeto
-
 ```
 cinema-flask/
 │
 ├── 📄 app.py                    # Aplicação principal Flask
+├── 📄 config.py                 # Configurações centralizadas      ⭐ NOVO
 ├── 📄 requirements.txt          # Dependências do projeto
-├── 📄 README.md                 # Documentação
+├── 📄 .env                      # Variáveis de ambiente (gitignored) ⭐ NOVO
+├── 📄 .gitignore               # Arquivos ignorados pelo Git
+├── 📄 teste_config.py          # Script de teste de configuração  ⭐ NOVO
+├── 📄 README.md                # Documentação
 │
-├── 📁 templates/                # Templates HTML (Jinja2)
-│   ├── index.html              # Página inicial - Listagem de filmes
+├── 📁 services/                # Serviços externos                 ⭐ NOVO
+│   ├── __init__.py
+│   └── tmdb_service.py         # Integração com API TMDB          ⭐ NOVO
+│
+├── 📁 utils/                   # Funções auxiliares                ⭐ NOVO
+│   ├── __init__.py
+│   └── helpers.py              # Helpers para JSON e data          ⭐ NOVO
+│
+├── 📁 templates/               # Templates HTML (Jinja2)
+│   ├── index.html              # Página inicial
 │   ├── compra.html             # Formulário de compra
 │   ├── sucesso.html            # Confirmação de compra
 │   ├── historico.html          # Histórico de vendas
-│   └── admin.html              # Painel administrativo
+│   └── admin.html              # Painel administrativo (atualizado) ⭐
 │
-├── 📁 static/                   # Arquivos estáticos
+├── 📁 static/                  # Arquivos estáticos
 │   └── style.css               # Estilos CSS globais
 │
-└── 📁 dados/                    # Persistência de dados
-    ├── filmes.json             # Catálogo de filmes
+└── 📁 dados/                   # Persistência de dados
+    ├── filmes.json             # Catálogo de filmes (enriquecido)  ⭐
     └── historico.json          # Registro de vendas
+```
+
+### Detalhamento dos Novos Arquivos
+
+#### `config.py` - Configurações Centralizadas ⭐ NOVO
+```python
+# Configurações do sistema:
+- TMDB_API_KEY          # Chave da API
+- TMDB_BASE_URL         # URL base da API
+- TMDB_IMAGE_BASE_URL   # URL das imagens
+- ESTOQUE_PADRAO        # Estoque inicial (100)
+- PRECO_PADRAO          # Preço padrão (R$ 20)
+- QUANTIDADE_FILMES     # Filmes por atualização (8)
+```
+
+#### `services/tmdb_service.py` - API Service ⭐ NOVO
+```python
+class TMDBService:
+    - filmes_em_cartaz()        # Busca filmes em cartaz
+    - filmes_populares()        # Busca filmes populares
+    - buscar_filme(titulo)      # Busca por título
+    - detalhes_filme(id)        # Detalhes completos
+    - formatar_para_sistema()   # Converte para formato interno
+    - atualizar_catalogo()      # Atualiza catálogo completo
+```
+
+#### `utils/helpers.py` - Funções Auxiliares ⭐ NOVO
+```python
+- criar_diretorios()         # Cria estrutura de pastas
+- carregar_json()            # Carrega arquivo JSON
+- salvar_json()              # Salva arquivo JSON
+- mesclar_filmes()           # Mescla catálogos mantendo estoque
 ```
 
 ### Detalhamento de Arquivos
@@ -542,17 +654,92 @@ MIT License - Copyright (c) 2025 Cauã Costa
 ---
 
 ## 📊 Status do Projeto
-
 ```
-⚡ Versão Atual: 1.1.0
-🚀 Status: Em Produção
-🐛 Bugs Conhecidos: 0
-✅ Última Atualização: Outubro 2025
+⚡ Versão Atual: 2.0.0  ⭐ ATUALIZADO
+🚀 Status: Em Produção com API TMDB
+🛠️ Última Atualização: 27 de Outubro de 2025
+🔥 Features Novas: Integração TMDB, Auto-update
+✅ Bugs Conhecidos: 0
+📦 Dependências: 6 (Flask, Requests, Dotenv, Gunicorn, Jinja2, Werkzeug)
 ```
 
 ---
 
 ## 📅 Histórico de Atualizações
+
+### 🎬 Versão 2.0.0 (27/10/2025)
+**🚀 ATUALIZAÇÃO MAJOR - Integração com API TMDB**
+
+**✨ Novas Funcionalidades:**
+- ✅ **Integração completa com API do TMDB** (The Movie Database)
+- ✅ **Atualização automática de catálogo** - Busca filmes em cartaz e populares
+- ✅ **Adição de filmes específicos** - Busque e adicione qualquer filme da base TMDB
+- ✅ **Dados enriquecidos dos filmes:**
+  - Sinopse completa
+  - Nota de avaliação (0-10)
+  - ID único do TMDB
+  - Gêneros atualizados automaticamente
+  - Imagens oficiais em alta qualidade
+- ✅ **Sistema de configuração com .env** - Variáveis de ambiente seguras
+- ✅ **Manutenção de estoque** - Ao atualizar catálogo, mantém vendas atuais
+
+**🏗️ Arquitetura:**
+- ✅ Criada camada `services/` - Serviços externos (TMDB API)
+- ✅ Criada camada `utils/` - Funções auxiliares reutilizáveis
+- ✅ Implementado `config.py` - Configurações centralizadas
+- ✅ Adicionado suporte a múltiplos ambientes (dev, prod, test)
+
+**🔧 Melhorias Técnicas:**
+- ✅ Refatoração completa da persistência de dados
+- ✅ Implementadas funções helper para JSON
+- ✅ Sistema de fallback quando API não disponível
+- ✅ Tratamento robusto de erros da API
+- ✅ Timeout de 10s para requisições
+- ✅ Suporte a filmes em português (pt-BR)
+- ✅ Região configurável (padrão: Brasil)
+
+**⚙️ Novas Rotas Administrativas:**
+```python
+POST /admin/atualizar-catalogo    # Atualiza catálogo completo
+POST /admin/adicionar-filme        # Adiciona filme específico
+```
+
+**📦 Dependências Adicionadas:**
+- `requests==2.31.0` - Requisições HTTP para API
+- `python-dotenv==1.0.0` - Gerenciamento de variáveis de ambiente
+
+**🔐 Segurança:**
+- ✅ API Keys armazenadas em arquivo .env (não commitado)
+- ✅ .gitignore atualizado para proteger credenciais
+- ✅ Validação de API Key antes de requisições
+
+**🐛 Bugs Corrigidos:**
+- ✅ Corrigido erro de importação em `config.py`
+- ✅ Corrigido erro de indentação em `app.py`
+- ✅ Corrigido nome de variável em `helpers.py`
+- ✅ Corrigido múltiplos erros em `tmdb_service.py`:
+  - Import incorreto de `exception`
+  - Nome de variável `imagem_base_url`
+  - Typo em `realease_date`
+  - Sobrescrita de variável em loop
+
+**📚 Documentação:**
+- ✅ README atualizado com instruções de configuração da API
+- ✅ Adicionados comentários detalhados no código
+- ✅ Criado guia de instalação completo
+
+**⚠️ BREAKING CHANGES:**
+- Necessário criar arquivo `.env` com `TMDB_API_KEY`
+- Nova estrutura de pastas requer reorganização
+- Alguns imports podem precisar ser atualizados
+
+**🔄 Migração:**
+Para migrar da v1.x para v2.0:
+1. Crie arquivo `.env` na raiz com sua API Key do TMDB
+2. Instale novas dependências: `pip install -r requirements.txt`
+3. Crie pastas `services/` e `utils/` com `__init__.py`
+4. Copie arquivos `config.py`, `tmdb_service.py` e `helpers.py`
+5. Execute: `python teste_config.py` para validar
 
 ### 🎬 Versão 1.1.0 (26/10/2025)
 **✨ Melhorias Implementadas:**
