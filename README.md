@@ -183,7 +183,7 @@ Certifique-se de ter instalado:
 
 1️⃣ **Clone o repositório**
 ```bash
-git clone https://github.com/seu-usuario/cinema-flask.git
+git clone https://github.com/CostaCodesFullStack/cinema-flask.git
 cd cinema-flask
 ```
 
@@ -347,19 +347,19 @@ cinema-flask/
 ## 🎨 Capturas de Tela
 
 ### 🏠 Página Inicial
-![Página Inicial](https://via.placeholder.com/800x400/0f0f0f/ffffff?text=Listagem+de+Filmes)
+![Página Inicial](https://cinema-ingressos.onrender.com)
 - Cards de filmes com design moderno
 - Informações de preço e disponibilidade
 - Sistema de busca integrado
 
 ### 🎫 Página de Compra
-![Compra](https://via.placeholder.com/800x400/1f1f1f/ffffff?text=Formulário+de+Compra)
+![Compra](https://cinema-ingressos.onrender.com/comprar/Titanic)
 - Tabela de preços clara
 - Validações em tempo real
 - Feedback visual de erros
 
 ### ⚙️ Painel Admin
-![Admin](https://via.placeholder.com/800x400/0f0f0f/ffffff?text=Painel+Administrativo)
+![Admin](https://cinema-ingressos.onrender.com/admin)
 - Dashboard com estatísticas
 - Controle de estoque visual
 - Ranking de vendas
@@ -601,10 +601,10 @@ MIT License - Copyright (c) 2025 Cauã Costa
 
 ## 📈 Estatísticas
 
-![GitHub Stars](https://img.shields.io/github/stars/seu-usuario/cinema-flask?style=social)
-![GitHub Forks](https://img.shields.io/github/forks/seu-usuario/cinema-flask?style=social)
-![GitHub Issues](https://img.shields.io/github/issues/seu-usuario/cinema-flask)
-![GitHub Pull Requests](https://img.shields.io/github/issues-pr/seu-usuario/cinema-flask)
+![GitHub Stars](https://img.shields.io/github/stars/CostaCodesFullStack/cinema-flask?style=social)
+![GitHub Forks](https://img.shields.io/github/forks/CostaCodesFullStack/cinema-flask?style=social)
+![GitHub Issues](https://img.shields.io/github/issues/CostaCodesFullStack/cinema-flask)
+![GitHub Pull Requests](https://img.shields.io/github/issues-pr/CostaCodesFullStack/cinema-flask)
 
 ---
 
