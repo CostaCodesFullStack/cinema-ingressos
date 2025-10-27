@@ -19,6 +19,10 @@ except ImportError:
     # Fallback para modo básico sem API
     Config = None
     TMDBService = None
+    carregar_json = None
+    salvar_json = None
+    mesclar_filmes = None
+    criar_diretorios = None
 
 app = Flask(__name__)
 
@@ -223,9 +227,10 @@ def adicionar_filme_especifico(titulo):
 # ================== INICIALIZAÇÃO ==================
 
 # Cria diretórios necessários
-if criar_diretorios:
-    criar_diretorios()
-else:
+try:
+    if criar_diretorios:
+        criar_diretorios()
+except Exception:
     os.makedirs('dados', exist_ok=True)
 
 # Carrega dados
