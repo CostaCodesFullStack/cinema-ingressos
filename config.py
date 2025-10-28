@@ -23,7 +23,11 @@ class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
 
     # Modo debug (True = mostra erros detalhados, False = produção)
-    DEBUG = os.getenv('DEBUG', 'True') == 'True'
+    DEBUG = os.getenv('DEBUG', 'False') == 'True'
+    
+    # Porta e host para servidor
+    PORT = int(os.getenv('PORT', 5000))
+    HOST = os.getenv('HOST', '0.0.0.0')
 
 
     # ==================== CONFIGURAÇÕES TMDB API ====================
@@ -81,11 +85,12 @@ class ProductionConfig(Config):
     """Configurações específicas para ambiente de produção"""
     DEBUG = False
     TESTING = False
+    
+    # Força host 0.0.0.0 em produção
+    HOST = '0.0.0.0'
 
-    # Em produção, EXIGE que SECRET_KEY esteja no .env
-    SECRET_KEY = os.getenv('SECRET_KEY')
-    if not SECRET_KEY:
-        raise ValueError("SECRET_KEY não configurada no ambiente de produção!")
+    # Em produção, usa SECRET_KEY do ambiente ou gera uma padrão
+    SECRET_KEY = os.getenv('SECRET_KEY', os.urandom(24).hex())
 
 # ==================== CONFIGURAÇÃO DE TESTE ====================
 class TestingConfig(Config):

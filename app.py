@@ -14,9 +14,11 @@ try:
     from config import Config
     from services.tmdb_service import TMDBService
     from utils.helpers import carregar_json, salvar_json, mesclar_filmes, criar_diretorios
-except ImportError:
-    print("⚠️ Módulos não encontrados. Usando modo básico.")
-    # Fallback para modo básico sem API
+except ImportError as e:
+    print(f"Erro de importação: {e}")
+    print("Verifique se os arquivos existem em:")
+    print("  - services/tmdb_service.py")
+    print("  - utils/helpers.py")
     Config = None
     TMDBService = None
     carregar_json = None
@@ -456,4 +458,12 @@ if __name__ == "__main__":
     
     print("="*60 + "\n")
 
-    app.run(debug=True)
+    # Configuração para produção (Render) e desenvolvimento
+    port = int(os.getenv('PORT', 5000))
+    host = os.getenv('HOST', '0.0.0.0')
+    debug = os.getenv('DEBUG', 'False') == 'True'
+    
+    print(f"🚀 Servidor rodando em {host}:{port}")
+    print(f"🔧 Debug: {debug}\n")
+    
+    app.run(host=host, port=port, debug=debug)

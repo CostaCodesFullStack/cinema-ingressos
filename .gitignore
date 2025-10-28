@@ -13,8 +13,9 @@ ENV/
 .env.local
 .env.*.local
 
-# Dados
-dados/
+# Dados (mantém estrutura mas ignora conteúdo)
+dados/*.json
+!dados/.gitkeep
 
 # IDEs
 .vscode/
