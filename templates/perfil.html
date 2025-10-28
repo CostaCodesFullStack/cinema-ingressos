@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Perfil - Cinema Flask{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 50px auto; padding: 30px; background: #2a2a2a; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+    <h2 style="text-align: center; color: #ffd700; margin-bottom: 30px;">👤 Meu Perfil</h2>
+    
+    <div style="background: #1a1a1a; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <div style="margin-bottom: 15px;">
+            <strong style="color: #ffd700;">Nome de Usuário:</strong>
+            <p style="color: white; margin: 5px 0;">{{ current_user.username }}</p>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <strong style="color: #ffd700;">Email:</strong>
+            <p style="color: white; margin: 5px 0;">{{ current_user.email }}</p>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <strong style="color: #ffd700;">Tipo de Conta:</strong>
+            <p style="color: white; margin: 5px 0;">
+                {% if current_user.is_admin() %}
+                    <span style="color: #ff6b6b; font-weight: bold;">⭐ Administrador</span>
+                {% else %}
+                    <span style="color: #4caf50;">🎫 Usuário</span>
+                {% endif %}
+            </p>
+        </div>
+        
+        <div>
+            <strong style="color: #ffd700;">Membro desde:</strong>
+            <p style="color: white; margin: 5px 0;">{{ current_user.created_at }}</p>
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="{{ url_for('index') }}" 
+           style="display: inline-block; padding: 12px 30px; background: #ffd700; color: #000; text-decoration: none; border-radius: 5px; font-weight: bold; transition: 0.3s;"
+           onmouseover="this.style.background='#ffed4e'" 
+           onmouseout="this.style.background='#ffd700'">
+            ← Voltar ao Início
+        </a>
+    </div>
+</div>
+{% endblock %}

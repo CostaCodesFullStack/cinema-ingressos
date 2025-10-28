@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Registro - Cinema Flask{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 50px auto; padding: 30px; background: #2a2a2a; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+    <h2 style="text-align: center; color: #ffd700; margin-bottom: 30px;">✨ Criar Conta</h2>
+    
+    <form method="POST" action="{{ url_for('registro') }}">
+        <div style="margin-bottom: 20px;">
+            <label for="username" style="display: block; margin-bottom: 5px; color: #ccc;">Nome de Usuário:</label>
+            <input type="text" id="username" name="username" required minlength="3"
+                   style="width: 100%; padding: 10px; border: 1px solid #444; background: #1a1a1a; color: white; border-radius: 5px; font-size: 16px;">
+            <small style="color: #888;">Mínimo 3 caracteres</small>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label for="email" style="display: block; margin-bottom: 5px; color: #ccc;">Email:</label>
+            <input type="email" id="email" name="email" required
+                   style="width: 100%; padding: 10px; border: 1px solid #444; background: #1a1a1a; color: white; border-radius: 5px; font-size: 16px;">
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label for="password" style="display: block; margin-bottom: 5px; color: #ccc;">Senha:</label>
+            <input type="password" id="password" name="password" required minlength="6"
+                   style="width: 100%; padding: 10px; border: 1px solid #444; background: #1a1a1a; color: white; border-radius: 5px; font-size: 16px;">
+            <small style="color: #888;">Mínimo 6 caracteres</small>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label for="password_confirm" style="display: block; margin-bottom: 5px; color: #ccc;">Confirmar Senha:</label>
+            <input type="password" id="password_confirm" name="password_confirm" required minlength="6"
+                   style="width: 100%; padding: 10px; border: 1px solid #444; background: #1a1a1a; color: white; border-radius: 5px; font-size: 16px;">
+        </div>
+        
+        <button type="submit" 
+                style="width: 100%; padding: 12px; background: #ffd700; color: #000; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s;"
+                onmouseover="this.style.background='#ffed4e'" 
+                onmouseout="this.style.background='#ffd700'">
+            Criar Conta
+        </button>
+    </form>
+    
+    <div style="text-align: center; margin-top: 20px; color: #888;">
+        <p>Já tem uma conta? <a href="{{ url_for('login') }}" style="color: #ffd700;">Faça login aqui</a></p>
+    </div>
+</div>
+{% endblock %}

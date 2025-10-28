@@ -17,6 +17,9 @@ ENV/
 dados/*.json
 !dados/.gitkeep
 
+# Dados sensíveis de usuários
+dados/usuarios.json
+
 # IDEs
 .vscode/
 .idea/

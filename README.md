@@ -537,15 +537,15 @@ else:
 - [ ] Backup automático
 
 #### Autenticação & Segurança
-- [ ] Sistema de login/registro
-- [ ] Níveis de acesso (admin, operador, cliente)
-- [ ] Proteção de rotas com decorators
+- [x] Sistema de login/registro ✅ **IMPLEMENTADO v2.1.0**
+- [x] Níveis de acesso (admin, operador, cliente) ✅ **IMPLEMENTADO v2.1.0**
+- [x] Proteção de rotas com decorators ✅ **IMPLEMENTADO v2.1.0**
 - [ ] Tokens JWT para API
 
 #### Funcionalidades Avançadas
 - [ ] Sistema de sessões de cinema (horários)
 - [ ] Escolha de assentos interativa
-- [ ] Integração com API TMDB (sinopses, trailers)
+- [x] Integração com API TMDB (sinopses, trailers) ✅ **IMPLEMENTADO v2.0.0**
 - [ ] Geração de QR Code nos ingressos
 - [ ] Sistema de reservas (pagar depois)
 
@@ -655,17 +655,91 @@ MIT License - Copyright (c) 2025 Cauã Costa
 
 ## 📊 Status do Projeto
 ```
-⚡ Versão Atual: 2.0.0  ⭐ ATUALIZADO
-🚀 Status: Em Produção com API TMDB
-🛠️ Última Atualização: 27 de Outubro de 2025
-🔥 Features Novas: Integração TMDB, Auto-update
+⚡ Versão Atual: 2.1.0  ⭐ ATUALIZADO
+🚀 Status: Em Produção com API TMDB + Autenticação
+🛠️ Última Atualização: 28 de Outubro de 2025
+🔥 Features Novas: Sistema de Login/Registro, Proteção de Rotas
 ✅ Bugs Conhecidos: 0
-📦 Dependências: 6 (Flask, Requests, Dotenv, Gunicorn, Jinja2, Werkzeug)
+📦 Dependências: 8 (Flask, Requests, Dotenv, Gunicorn, Jinja2, Werkzeug, Flask-Login)
 ```
 
 ---
 
 ## 📅 Histórico de Atualizações
+
+### 🔐 Versão 2.1.0 (28/10/2025)
+**🚀 ATUALIZAÇÃO MAJOR - Sistema de Autenticação Completo**
+
+**✨ Novas Funcionalidades:**
+- ✅ **Sistema de Login/Registro** - Autenticação completa de usuários
+- ✅ **Flask-Login integrado** - Gerenciamento de sessões seguras
+- ✅ **Hash de senhas com bcrypt** - Segurança via Werkzeug
+- ✅ **Dois níveis de acesso:**
+  - **User** - Usuário comum (pode comprar ingressos)
+  - **Admin** - Administrador (acesso total ao sistema)
+- ✅ **Proteção de rotas administrativas** - Decorator `@admin_required`
+- ✅ **Página de perfil do usuário** - Visualizar informações da conta
+- ✅ **Usuário admin padrão** - Criado automaticamente (admin/admin123)
+
+**🎨 Novos Templates:**
+- ✅ `base.html` - Template base com menu de usuário dinâmico
+- ✅ `login.html` - Página de login responsiva
+- ✅ `registro.html` - Página de registro com validações
+- ✅ `perfil.html` - Página de perfil do usuário
+
+**🏗️ Arquitetura:**
+- ✅ Criado `services/auth_service.py` - Serviço de autenticação
+- ✅ Classe `User` compatível com Flask-Login
+- ✅ Classe `AuthService` para gerenciamento de usuários
+- ✅ Persistência em `dados/usuarios.json` (protegido no .gitignore)
+
+**🔐 Segurança:**
+- ✅ Senhas com hash bcrypt (nunca armazenadas em texto plano)
+- ✅ Validações de entrada (username mín. 3 chars, senha mín. 6 chars)
+- ✅ Proteção CSRF automática do Flask
+- ✅ Sessões seguras com Flask-Login
+- ✅ Arquivo de usuários no .gitignore
+
+**⚙️ Novas Rotas:**
+```python
+GET/POST /login              # Página de login
+GET/POST /registro           # Página de registro
+GET      /logout             # Fazer logout (protegida)
+GET      /perfil             # Ver perfil (protegida)
+```
+
+**🛡️ Rotas Protegidas:**
+- ✅ `/admin` - Apenas administradores
+- ✅ `/admin/atualizar-catalogo` - Apenas administradores
+- ✅ `/admin/adicionar-filme` - Apenas administradores
+- ✅ `/perfil` - Apenas usuários logados
+- ✅ `/logout` - Apenas usuários logados
+
+**📦 Dependências Adicionadas:**
+- `Flask-Login==0.6.3` - Gerenciamento de autenticação
+- `Werkzeug==3.0.3` - Hash de senhas (bcrypt)
+
+**📚 Documentação:**
+- ✅ Criado `AUTH_DOCS.md` - Documentação completa do sistema de autenticação
+- ✅ Exemplos de uso da API do AuthService
+- ✅ Guia de segurança e boas práticas
+- ✅ Instruções de credenciais padrão
+
+**🎯 Validações Implementadas:**
+- ✅ Username único (case-insensitive)
+- ✅ Email único e formato válido
+- ✅ Confirmação de senha no registro
+- ✅ Proteção contra último admin ser deletado
+- ✅ Mensagens de erro amigáveis
+
+**🔄 Melhorias no Deploy:**
+- ✅ Correção de porta e host para Render (erro 502 resolvido)
+- ✅ Configuração dinâmica de PORT via variável de ambiente
+- ✅ Host configurado como 0.0.0.0 para aceitar conexões externas
+- ✅ Debug desativado por padrão em produção
+- ✅ Criado `DEPLOY.md` com instruções completas
+
+---
 
 ### 🎬 Versão 2.0.0 (27/10/2025)
 **🚀 ATUALIZAÇÃO MAJOR - Integração com API TMDB**

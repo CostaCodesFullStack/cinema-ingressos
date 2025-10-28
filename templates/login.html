@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Cinema Flask{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 50px auto; padding: 30px; background: #2a2a2a; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+    <h2 style="text-align: center; color: #ffd700; margin-bottom: 30px;">🔑 Login</h2>
+    
+    <form method="POST" action="{{ url_for('login') }}">
+        <div style="margin-bottom: 20px;">
+            <label for="username" style="display: block; margin-bottom: 5px; color: #ccc;">Usuário ou Email:</label>
+            <input type="text" id="username" name="username" required
+                   style="width: 100%; padding: 10px; border: 1px solid #444; background: #1a1a1a; color: white; border-radius: 5px; font-size: 16px;">
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label for="password" style="display: block; margin-bottom: 5px; color: #ccc;">Senha:</label>
+            <input type="password" id="password" name="password" required
+                   style="width: 100%; padding: 10px; border: 1px solid #444; background: #1a1a1a; color: white; border-radius: 5px; font-size: 16px;">
+        </div>
+        
+        <button type="submit" 
+                style="width: 100%; padding: 12px; background: #ffd700; color: #000; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s;"
+                onmouseover="this.style.background='#ffed4e'" 
+                onmouseout="this.style.background='#ffd700'">
+            Entrar
+        </button>
+    </form>
+    
+    <div style="text-align: center; margin-top: 20px; color: #888;">
+        <p>Não tem uma conta? <a href="{{ url_for('registro') }}" style="color: #ffd700;">Registre-se aqui</a></p>
+    </div>
+</div>
+{% endblock %}

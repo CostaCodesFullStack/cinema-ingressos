@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Cinema Flask{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .user-menu { float: right; margin-right: 20px; }
+        .user-menu a { margin: 0 10px; color: #ffd700; }
+        .flash-messages { max-width: 800px; margin: 20px auto; }
+        .flash { padding: 15px; margin: 10px 0; border-radius: 5px; font-weight: bold; }
+        .flash.success { background: #4caf50; color: white; }
+        .flash.error { background: #f44336; color: white; }
+        .flash.warning { background: #ff9800; color: white; }
+        .flash.info { background: #2196f3; color: white; }
+    </style>
+</head>
+<body>
+    <header style="background: #1f1f1f; padding: 15px 0; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.5);">
+        <nav>
+            <a href="{{ url_for('index') }}" style="margin: 0 15px">🏠 Início</a>
+            <a href="{{ url_for('ver_historico') }}" style="margin: 0 15px">📊 Histórico</a>
+            {% if current_user.is_authenticated and current_user.is_admin() %}
+            <a href="{{ url_for('admin') }}" style="margin: 0 15px">⚙️ Admin</a>
+            {% endif %}
+            <div class="user-menu">
+                {% if current_user.is_authenticated %}
+                    <span style="color: #ffd700;">👤 {{ current_user.username }}</span>
+                    {% if current_user.is_admin() %}
+                    <span style="color: #ff6b6b; font-size: 0.8em;">[ADMIN]</span>
+                    {% endif %}
+                    <a href="{{ url_for('perfil') }}">📝 Perfil</a>
+                    <a href="{{ url_for('logout') }}">🚪 Sair</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">🔑 Login</a>
+                    <a href="{{ url_for('registro') }}">✨ Registrar</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    <main>{% block content %}{% endblock %}</main>
+    <footer style="text-align: center; padding: 20px; margin-top: 50px; color: #888;">
+        <p>🎬 Sistema de Cinema Flask v2.0 | Com Autenticação</p>
+    </footer>
+</body>
+</html>

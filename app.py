@@ -5,7 +5,9 @@
 # Versão: 2.0.0
 
 from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from datetime import datetime
+from functools import wraps
 import os
 
 # Importa configurações e serviços
@@ -13,14 +15,18 @@ import os
 try:
     from config import Config
     from services.tmdb_service import TMDBService
+    from services.auth_service import AuthService, User
     from utils.helpers import carregar_json, salvar_json, mesclar_filmes, criar_diretorios
 except ImportError as e:
     print(f"Erro de importação: {e}")
     print("Verifique se os arquivos existem em:")
     print("  - services/tmdb_service.py")
+    print("  - services/auth_service.py")
     print("  - utils/helpers.py")
     Config = None
     TMDBService = None
+    AuthService = None
+    User = None
     carregar_json = None
     salvar_json = None
     mesclar_filmes = None
@@ -35,8 +41,36 @@ if Config:
 else:
     app.secret_key = 'dev-secret-key'
 
-# Inicializa serviço TMDB (se disponível)
+# Inicializa Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+login_manager.login_message = 'Por favor, faça login para acessar esta página.'
+login_manager.login_message_category = 'warning'
+
+# Inicializa serviços
 tmdb_service = TMDBService() if TMDBService else None
+auth_service = AuthService() if AuthService else None
+
+# User loader para Flask-Login
+@login_manager.user_loader
+def load_user(user_id):
+    if auth_service:
+        return auth_service.buscar_usuario_por_id(user_id)
+    return None
+
+# Decorator para rotas admin
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            flash('Você precisa estar logado para acessar esta página.', 'warning')
+            return redirect(url_for('login'))
+        if not current_user.is_admin():
+            flash('Você não tem permissão para acessar esta página.', 'error')
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 # ================== FUNÇÕES DE PERSISTÊNCIA ==================
@@ -371,6 +405,7 @@ def ver_historico():
 
 
 @app.route("/admin")
+@admin_required
 def admin():
     # Calcula estatísticas
     total_vendas = len(historico)
@@ -400,6 +435,7 @@ def buscar():
 
 
 @app.route("/admin/atualizar-catalogo", methods=["POST"])
+@admin_required
 def atualizar_catalogo():
     """Rota para atualizar catálogo via TMDB API"""
     if not tmdb_service:
@@ -420,6 +456,7 @@ def atualizar_catalogo():
 
 
 @app.route("/admin/adicionar-filme", methods=["POST"])
+@admin_required
 def adicionar_filme():
     """Rota para adicionar filme específico"""
     if not tmdb_service:
@@ -443,6 +480,92 @@ def adicionar_filme():
         flash(f"❌ Filme '{titulo}' não encontrado", "error")
     
     return redirect(url_for("admin"))
+
+
+# ================== ROTAS DE AUTENTICAÇÃO ==================
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """Rota de login"""
+    if current_user.is_authenticated:
+        return redirect(url_for("index"))
+    
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+        
+        if not username or not password:
+            flash("Por favor, preencha todos os campos", "warning")
+            return render_template("login.html")
+        
+        if not auth_service:
+            flash("Sistema de autenticação não disponível", "error")
+            return render_template("login.html")
+        
+        sucesso, mensagem, user = auth_service.autenticar_usuario(username, password)
+        
+        if sucesso:
+            login_user(user)
+            flash(mensagem, "success")
+            next_page = request.args.get("next")
+            return redirect(next_page) if next_page else redirect(url_for("index"))
+        else:
+            flash(mensagem, "error")
+    
+    return render_template("login.html")
+
+
+@app.route("/registro", methods=["GET", "POST"])
+def registro():
+    """Rota de registro"""
+    if current_user.is_authenticated:
+        return redirect(url_for("index"))
+    
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        email = request.form.get("email", "").strip()
+        password = request.form.get("password", "")
+        password_confirm = request.form.get("password_confirm", "")
+        
+        if not username or not email or not password or not password_confirm:
+            flash("Por favor, preencha todos os campos", "warning")
+            return render_template("registro.html")
+        
+        if password != password_confirm:
+            flash("As senhas não coincidem", "error")
+            return render_template("registro.html")
+        
+        if not auth_service:
+            flash("Sistema de autenticação não disponível", "error")
+            return render_template("registro.html")
+        
+        sucesso, mensagem, user = auth_service.registrar_usuario(username, email, password)
+        
+        if sucesso:
+            login_user(user)
+            flash(mensagem, "success")
+            return redirect(url_for("index"))
+        else:
+            flash(mensagem, "error")
+    
+    return render_template("registro.html")
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    """Rota de logout"""
+    logout_user()
+    flash("Você saiu da sua conta com sucesso", "success")
+    return redirect(url_for("index"))
+
+
+@app.route("/perfil")
+@login_required
+def perfil():
+    """Rota de perfil do usuário"""
+    return render_template("perfil.html")
+
 
 # ================== EXECUÇÃO ==================
 if __name__ == "__main__":
