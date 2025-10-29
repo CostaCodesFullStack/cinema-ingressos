@@ -34,8 +34,9 @@ class Config:
     
     # Sua chave de API do TMDB
     # Obtenha em: https://www.themoviedb.org/settings/api
-
-    TMDB_API_KEY = os.getenv('TMDB_API_KEY', 'c06e7ccd90466973a29b5de97bb41c83')
+    # IMPORTANTE: Nunca coloque a chave diretamente aqui!
+    # Use o arquivo .env para armazenar a chave
+    TMDB_API_KEY = os.getenv('TMDB_API_KEY')
     
     # URL base da API do TMDB (versão 3)
     TMDB_BASE_URL = 'https://api.themoviedb.org/3'

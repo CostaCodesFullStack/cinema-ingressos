@@ -1,8 +1,7 @@
 # 🎬 Sistema de Vendas de Ingressos de Cinema refatorado
-
 # Autor: Cauã Costa
-# Data: 26/10/2025
-# Versão: 2.0.0
+# Data: 29/10/2025
+# Versão: 2.0.1 - Corrigido
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
@@ -11,7 +10,6 @@ from functools import wraps
 import os
 
 # Importa configurações e serviços
-
 try:
     from config import Config
     from services.tmdb_service import TMDBService
@@ -78,8 +76,6 @@ def admin_required(f):
 def carregar_filmes():
     """Carregar os filmes do arquivo JSON"""
     arquivo = 'dados/filmes.json'
-
-    # Dados padrão caso não tenha arquivo
     dados_padrao = {
         "Titanic": {
             "estoque": 100,
@@ -114,7 +110,6 @@ def carregar_filmes():
     if carregar_json:
         return carregar_json(arquivo, dados_padrao)
     else:
-        # Fallback sem helper
         try:
             import json
             with open(arquivo, 'r', encoding='utf-8') as f:
@@ -124,13 +119,11 @@ def carregar_filmes():
 
 
 def salvar_filmes(dados_filmes):
-    """ Salvar os filmes no arquvio JSON """
+    """Salvar os filmes no arquivo JSON"""
     arquivo = 'dados/filmes.json'
-
     if salvar_json:
         salvar_json(arquivo, dados_filmes)
     else:
-        # Fallback sem helper
         import json
         os.makedirs('dados', exist_ok=True)
         with open(arquivo, 'w', encoding='utf-8') as f:
@@ -140,11 +133,9 @@ def salvar_filmes(dados_filmes):
 def carregar_historico():
     """Carrega o histórico do arquivo JSON"""
     arquivo = 'dados/historico.json'
-
     if carregar_json:
         return carregar_json(arquivo, [])
     else:
-        # Fallback sem helper
         try:
             import json
             with open(arquivo, 'r', encoding='utf-8') as f:
@@ -155,11 +146,9 @@ def carregar_historico():
 def salvar_historico(dados_historico):
     """Salva o histórico no arquivo JSON"""
     arquivo = 'dados/historico.json'
-
     if salvar_json:
         salvar_json(arquivo, dados_historico)
     else:
-        # Fallback sem helper
         import json
         os.makedirs('dados', exist_ok=True)
         with open(arquivo, 'w', encoding='utf-8') as f:
@@ -177,39 +166,25 @@ def contar_vendas_por_filme(historico):
 # ================== FUNÇÕES DA API TMDB ==================
 
 def atualizar_filmes_tmdb(manter_estoque=True):
-    """
-    Atualiza catálogo de filmes usando a API do TMDB
-    
-    Args:
-        manter_estoque: Se True, mantém o estoque dos filmes existentes
-        
-    Returns:
-        True se sucesso, False caso contrário
-    """
+    """Atualiza catálogo de filmes usando a API do TMDB"""
     if not tmdb_service:
         print("⚠️ Serviço TMDB não disponível")
         return False
     
     try:
-        # Carrega filmes atuais
         filmes_atuais = carregar_filmes()
-
-        # Busca filmes novos da API
         filmes_novos = tmdb_service.atualizar_catalogo()
 
         if not filmes_novos:
             print("❌ Nenhum filme retornado da API")
             return False
 
-        # Mescla filmes (mantendo estoque se necessário)
         if manter_estoque and mesclar_filmes:
             filmes_final = mesclar_filmes(filmes_atuais, filmes_novos, manter_estoque=True)
         else:
             filmes_final = filmes_novos
 
-        # Salva filmes atualizados
         salvar_filmes(filmes_final)
-
         print(f"✅ Catálogo atualizado com {len(filmes_final)} filmes")
         return True
     except Exception as e:
@@ -217,38 +192,25 @@ def atualizar_filmes_tmdb(manter_estoque=True):
         return False
 
 def adicionar_filme_especifico(titulo):
-    """
-    Adiciona um filme específico ao catálogo
-    
-    Args:
-        titulo: Título do filme a buscar
-        
-    Returns:
-        True se sucesso, False caso contrário
-    """
+    """Adiciona um filme específico ao catálogo"""
     if not tmdb_service:
         return False
 
     try:
-        # Busca o filme
         resultado = tmdb_service.buscar_filme(titulo)
 
         if not resultado or not resultado.get('results'):
             print(f"❌ Filme '{titulo}' não encontrado")
             return False
 
-        # Pega o primeiro resultado
         filme_tmdb = resultado['results'][0]
         filme_formatado = tmdb_service.formatar_para_sistema(filme_tmdb)
 
         if not filme_formatado:
             return False
 
-        # Carrega filmes atuais e adiciona o novo
         filmes = carregar_filmes()
         filmes[filme_tmdb['title']] = filme_formatado
-
-        # Salva
         salvar_filmes(filmes)
 
         print(f"✅ Filme '{filme_tmdb['title']}' adicionado com sucesso")
@@ -259,25 +221,23 @@ def adicionar_filme_especifico(titulo):
         return False
 
 
-
 # ================== INICIALIZAÇÃO ==================
 
-# Cria diretórios necessários
 try:
     if criar_diretorios:
         criar_diretorios()
 except Exception:
     os.makedirs('dados', exist_ok=True)
 
-# Carrega dados
-filmes= carregar_filmes()
-historico = carregar_historico()
-
 # ================== ROTAS ==================
 
 @app.route("/")
 def index():
+    """Página inicial com lista de filmes"""
+    filmes = carregar_filmes()
+    historico = carregar_historico()
     termo = request.args.get('busca', '').lower()
+    
     if termo:
         filtrados = {nome: dados for nome, dados in filmes.items() if termo in nome.lower()}
     else:
@@ -289,18 +249,21 @@ def index():
 
 
 @app.route("/comprar/<filme>", methods=["GET", "POST"])
+@login_required  # CORREÇÃO: Agora requer login
 def comprar(filme):
+    """Página de compra de ingressos"""
+    filmes = carregar_filmes()
+    historico = carregar_historico()
+    
     if filme not in filmes:
         flash("Filme não encontrado!", "error")
         return redirect(url_for("index"))
 
     if request.method == "POST":
-        # Pega os valores
         idade_raw = request.form.get("idade")
         estudante = request.form.get("estudante")
         qtd_raw = request.form.get("quantidade")
 
-        # Validações básicas
         if not idade_raw or not estudante or not qtd_raw:
             erro_msg = "⚠️ Por favor, preencha todos os campos."
             return render_template(
@@ -341,7 +304,6 @@ def comprar(filme):
                 filmes=filmes,
             )
 
-        # Preços
         preco_inteira = filmes[filme]["preco"]
         preco_meia = preco_inteira / 2
 
@@ -352,7 +314,6 @@ def comprar(filme):
             tipo = "Inteira"
             preco = preco_inteira
 
-        # Checar estoque
         if filmes[filme]["estoque"] >= qtd:
             filmes[filme]["estoque"] -= qtd
             total = preco * qtd
@@ -366,6 +327,7 @@ def comprar(filme):
             salvar_filmes(filmes)
             salvar_historico(historico)
             
+            flash(f"✅ Compra realizada com sucesso! Total: R$ {total:.2f}", "success")
             return redirect(
                 url_for("sucesso", filme=filme, total=f"{total:.2f}", tipo=tipo)
             )
@@ -378,7 +340,6 @@ def comprar(filme):
                 filmes=filmes,
             )
 
-    # GET -> mostrar formulário
     return render_template(
         "compra.html",
         filme=filme,
@@ -389,7 +350,9 @@ def comprar(filme):
 
 
 @app.route("/sucesso")
+@login_required
 def sucesso():
+    """Página de confirmação de compra"""
     filme = request.args.get("filme")
     total = request.args.get("total")
     tipo = request.args.get("tipo")
@@ -397,7 +360,10 @@ def sucesso():
 
 
 @app.route("/historico")
+@login_required
 def ver_historico():
+    """Página de histórico de vendas"""
+    historico = carregar_historico()
     total_vendido = sum(item["total"] for item in historico)
     return render_template(
         "historico.html", historico=historico, total_vendido=total_vendido
@@ -407,7 +373,10 @@ def ver_historico():
 @app.route("/admin")
 @admin_required
 def admin():
-    # Calcula estatísticas
+    """Painel administrativo"""
+    filmes = carregar_filmes()
+    historico = carregar_historico()
+    
     total_vendas = len(historico)
     total_arrecadado = sum(item["total"] for item in historico)
     vendas_por_filme = contar_vendas_por_filme(historico)
@@ -424,7 +393,11 @@ def admin():
 
 @app.route("/buscar")
 def buscar():
+    """Busca de filmes"""
+    filmes = carregar_filmes()
+    historico = carregar_historico()
     termo = request.args.get("q", "").lower()
+    
     filmes_filtrados = {
         nome: dados for nome, dados in filmes.items() if termo in nome.lower()
     }
@@ -445,9 +418,6 @@ def atualizar_catalogo():
     sucesso = atualizar_filmes_tmdb(manter_estoque=True)
     
     if sucesso:
-        # Recarrega filmes globais
-        global filmes
-        filmes = carregar_filmes()
         flash("✅ Catálogo atualizado com sucesso!", "success")
     else:
         flash("❌ Erro ao atualizar catálogo", "error")
@@ -472,9 +442,6 @@ def adicionar_filme():
     sucesso = adicionar_filme_especifico(titulo)
     
     if sucesso:
-        # Recarrega filmes globais
-        global filmes
-        filmes = carregar_filmes()
         flash(f"✅ Filme adicionado com sucesso!", "success")
     else:
         flash(f"❌ Filme '{titulo}' não encontrado", "error")
@@ -570,18 +537,16 @@ def perfil():
 # ================== EXECUÇÃO ==================
 if __name__ == "__main__":
     print("\n" + "="*60)
-    print("🎬 SISTEMA DE CINEMA FLASK - v2.0.0")
+    print("🎬 SISTEMA DE CINEMA FLASK - v2.0.1")
     print("="*60)
     
     if tmdb_service:
         print("✅ API TMDB: Ativa")
-        print(f"📂 Filmes no catálogo: {len(filmes)}")
     else:
         print("⚠️  API TMDB: Desativada (modo básico)")
     
     print("="*60 + "\n")
 
-    # Configuração para produção (Render) e desenvolvimento
     port = int(os.getenv('PORT', 5000))
     host = os.getenv('HOST', '0.0.0.0')
     debug = os.getenv('DEBUG', 'False') == 'True'
